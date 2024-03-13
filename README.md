@@ -2,6 +2,8 @@
 
 This is a simple Telegram bot designed to help manage and track payments within a group.
 
+If you are unfamiliar with Python Telegram bots, you can refer to the `LEARN_TELE_BOT.py` file in this repository for a basic example and tutorial on how to create and use a Telegram bot in Python.
+
 ## Features
 
 - Add a list of user handles and the amount they have to pay.
