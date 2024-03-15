@@ -1,2 +1,8 @@
 # Ignore tokens
 token.txt
+
+# Ignore logs
+*.log
+
+# Ignore env
+.env
