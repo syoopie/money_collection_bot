@@ -1,0 +1,9 @@
+{
+  "start": "Welcome to the Money Collection Bot! Start by sending me a list of user handles and how much they owe you. For example:\n\n@user1 9.6\n@user2 5.4\n@user3 3.0",
+  "messageSent": "Message sent!",
+  "saveError": "Error saving data. Please try again.",
+  "invalidFormat": "Invalid input format. Please provide data in the format:\n\nAMEENS\n92041412\n\n@user1 9.6\n@user2 5.4\n@user3 3.0",
+  "invalidCommand": "Invalid command. Please use the /help command to see the list of available commands.",
+  "noBufferedInput": "No input found. Please send a list of debts first!",
+  "genericError": "An error occurred. Please try again."
+}
