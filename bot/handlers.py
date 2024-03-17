@@ -100,7 +100,7 @@ async def handle_command_show(update: Update, context: ContextTypes.DEFAULT_TYPE
             [get_debt_list_string(list_id) for list_id in debt_lists]
         )
     else:
-        message = "You have not created any debt lists."
+        message = "You do not have any debt lists."
 
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
