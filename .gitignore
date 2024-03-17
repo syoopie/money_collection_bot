@@ -9,3 +9,6 @@ token.txt
 
 # Ignore __pycache__
 __pycache__/
+
+# Ignore databases
+*.db
