@@ -11,6 +11,7 @@ from bot.handlers.command_handlers import (
 )
 from bot.handlers.callback_handlers import (
     handle_confirm_callback,
+    handle_confirm_clear_callback,
     handle_send_to_group_callback,
     handle_pay_callback,
     handle_unpay_callback,
@@ -69,6 +70,9 @@ if __name__ == "__main__":
     )
     app.add_handler(CallbackQueryHandler(handle_pay_callback, pattern="^pay:"))
     app.add_handler(CallbackQueryHandler(handle_unpay_callback, pattern="^unpay:"))
+    app.add_handler(
+        CallbackQueryHandler(handle_confirm_clear_callback, pattern="confirmClear")
+    )
 
     # Unknown command handler as the last handler for commands
     app.add_handler(

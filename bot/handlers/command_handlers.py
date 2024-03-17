@@ -1,4 +1,4 @@
-from telegram import Update
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes
 from utils.utils import get_debt_list_string
 
@@ -105,21 +105,16 @@ async def handle_command_clear(update: Update, context: ContextTypes.DEFAULT_TYP
     Returns:
         None
     """
-    # Delete all debt lists that are made by the user
-    debt_lists = get_debt_lists_by_user_id(update.effective_user.id)
-    if debt_lists:
-        for list_id in debt_lists:
-            # Delete the debt list
-            delete_debt_list(list_id)
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text="All your debt lists have been cleared.",
-        )
-    else:
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text="You have no debt lists to clear.",
-        )
+    # Send a confirmation message to the user with a button to press to confirm the action
+    confirm_button = InlineKeyboardButton("Confirm ✅", callback_data="confirmClear")
+    keyboard = [[confirm_button]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text="Are you sure you want to delete all your debt lists?",
+        reply_markup=reply_markup,
+    )
 
 
 async def handle_command_help(update: Update, context: ContextTypes.DEFAULT_TYPE):
