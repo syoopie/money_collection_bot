@@ -1,6 +1,8 @@
 from datetime import datetime
 from typing import List, Tuple, Union
 
+from telegram import Bot
+
 from bot.database import get_debt_list_info
 from datetime import datetime
 from pytz import timezone
@@ -78,3 +80,17 @@ def get_debt_list_string(debt_list_id: int) -> str:
     message += f"\n\nMessage last updated at {last_updated}"
 
     return message
+
+
+async def delete_message(bot: Bot, chat_id: int, message_id: int):
+    """
+    Deletes a message from a chat.
+
+    Args:
+        chat_id (int): The ID of the chat where the message is located.
+        message_id (int): The ID of the message to delete.
+
+    Returns:
+        None
+    """
+    await bot.delete_message(chat_id=chat_id, message_id=message_id)

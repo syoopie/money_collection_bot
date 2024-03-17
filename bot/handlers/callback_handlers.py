@@ -1,11 +1,13 @@
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import ContextTypes
-from utils.utils import get_debt_list_string
+from utils.utils import delete_message, get_debt_list_string
 
 from bot.database import (
     delete_debt_list,
+    get_debt_list_message_info,
     get_debt_lists_by_user_id,
     get_user_groups,
+    update_debt_list_message_info,
     update_debt_list_status,
     update_debt_list_group,
     get_group_name,
@@ -105,13 +107,16 @@ async def handle_send_to_group_callback(
     buttons = [[pay_button, unpay_button]]
     reply_markup = InlineKeyboardMarkup(buttons)
 
-    await context.bot.send_message(
+    debt_list_message = await context.bot.send_message(
         chat_id=group_id,
         text=message,
         reply_markup=reply_markup,
     )
 
     update_debt_list_group(debt_list_id, group_id)
+    update_debt_list_message_info(
+        debt_list_id, debt_list_message.chat.id, debt_list_message.message_id
+    )
 
     # Modify the message to indicate that the debt list has been sent to the group
     await context.bot.edit_message_text(
@@ -225,6 +230,8 @@ async def handle_confirm_clear_callback(
     debt_lists = get_debt_lists_by_user_id(update.effective_user.id)
     if debt_lists:
         for list_id in debt_lists:
+            chat_id, message_id = get_debt_list_message_info(list_id)
+            await delete_message(context.bot, chat_id, message_id)
             delete_debt_list(list_id)
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
