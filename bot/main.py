@@ -1,19 +1,22 @@
 from config.config import BOT_TOKEN
 from bot.database import initialize_database
 
-# bot/main.py
-from bot.handlers import (
+from bot.handlers.command_handlers import (
     handle_command_start,
     handle_command_get_groups,
     handle_command_show,
     handle_command_clear,
     handle_command_help,
-    handle_parse_and_check_input,
+    handle_unknown_command,
+)
+from bot.handlers.callback_handlers import (
     handle_confirm_callback,
     handle_send_to_group_callback,
     handle_pay_callback,
     handle_unpay_callback,
-    handle_unknown_command,
+)
+from bot.handlers.other_handlers import (
+    handle_parse_and_check_input,
     handle_save_user_group_info,
 )
 from telegram.ext import (
