@@ -127,15 +127,14 @@ def get_group_name(group_id: int) -> str:
     return ""  # TODO: Should return some error instead
 
 
-def add_or_update_debt_list(
+def add_debt_list(
     user_id: int,
     debt_name: str,
     phone_number: str,
     group_id: int = None,
-    is_pending: bool = True,
 ) -> int:
     """
-    Adds or updates a debt list for a user in the database.
+    Adds a debt list for a user in the database.
 
     Args:
         user_id (int): The ID of the user.
@@ -144,24 +143,17 @@ def add_or_update_debt_list(
         group_id (int, optional): The ID of the group the debt belongs to. Defaults to None.
 
     Returns:
-        DebtList: The ID of the updated or newly created debt list.
+        DebtList: The ID of the newly created debt list.
 
     """
     db: Session = next(get_db())
-    debt_list = db.query(DebtList).filter(DebtList.user_id == user_id).first()
-    if debt_list:
-        debt_list.debt_name = debt_name
-        debt_list.group_id = group_id
-        debt_list.phone_number = phone_number
-        debt_list.is_pending = is_pending
-    else:
-        debt_list = DebtList(
-            user_id=user_id,
-            group_id=group_id,
-            debt_name=debt_name,
-            phone_number=phone_number,
-        )
-        db.add(debt_list)
+    debt_list = DebtList(
+        user_id=user_id,
+        group_id=group_id,
+        debt_name=debt_name,
+        phone_number=phone_number,
+    )
+    db.add(debt_list)
     db.commit()
     return debt_list.list_id
 

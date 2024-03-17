@@ -9,7 +9,7 @@ from bot.database import (
     get_user_groups,
     is_user_in_group,
     associate_user_with_group,
-    add_or_update_debt_list,
+    add_debt_list,
     update_debt_list_status,
     update_debt_list_group,
     get_group_name,
@@ -172,7 +172,7 @@ async def handle_parse_and_check_input(
         None
     """
     success, result = parse_debt_list(update.message.text)
-    user_id = update.effective_user.id  # Use integer ID directly
+    user_id = update.effective_user.id
 
     if not success:
         await context.bot.send_message(chat_id=user_id, text=result)
@@ -181,7 +181,7 @@ async def handle_parse_and_check_input(
     # Add the debt list to the database
     debt_name, phone_number, debts = result
     # Create new debt list
-    debt_list_id = add_or_update_debt_list(
+    debt_list_id = add_debt_list(
         user_id=user_id, debt_name=debt_name, phone_number=phone_number
     )
 
@@ -234,7 +234,7 @@ async def handle_confirm_callback(update: Update, context: ContextTypes.DEFAULT_
     if not get_debt_list_pending_status(debt_list_id):
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text="There is no pending debt list",
+            text="That debt list does not exist or has already been confirmed",
         )
         return
 
