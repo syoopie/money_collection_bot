@@ -96,7 +96,7 @@ async def handle_command_show(update: Update, context: ContextTypes.DEFAULT_TYPE
     debt_lists = get_debt_lists_by_user_id(update.effective_user.id)
     if debt_lists:
         message = "Here are your debt lists:\n\n"
-        message += "\n##############\n".join(
+        message += "\n\n###################################\n\n".join(
             [get_debt_list_string(list_id) for list_id in debt_lists]
         )
     else:
