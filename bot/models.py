@@ -1,5 +1,7 @@
+from datetime import datetime
 from sqlalchemy import (
     create_engine,
+    event,
     Column,
     Integer,
     String,
@@ -7,6 +9,7 @@ from sqlalchemy import (
     Boolean,
     ForeignKey,
     Table,
+    DateTime,
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
@@ -32,6 +35,7 @@ class User(Base):
     username = Column(String, index=True)
     first_name = Column(String)
     last_name = Column(String)
+
     debt_lists = relationship("DebtList", back_populates="owner")
     # Define the relationship to Group, using back_populates for bidirectional relationship
     groups = relationship(
@@ -44,6 +48,7 @@ class Group(Base):
     group_id = Column(Integer, primary_key=True, index=True)
     group_name = Column(String)
     group_type = Column(String)
+
     debt_lists = relationship("DebtList", back_populates="group")
     # Define the relationship to User, using back_populates for bidirectional relationship
     users = relationship(
@@ -59,6 +64,9 @@ class DebtList(Base):
     debt_name = Column(String)
     phone_number = Column(String)
     is_pending = Column(Boolean, default=True)
+    last_updated = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    all_debts_paid = Column(Boolean, default=False)
+
     owner = relationship("User", back_populates="debt_lists")
     group = relationship("Group", back_populates="debt_lists", uselist=False)
     # Add cascade="delete, delete-orphan" to automatically delete debts when the debt list is deleted
@@ -74,4 +82,17 @@ class Debt(Base):
     owed_by_user_name = Column(String)
     amount = Column(Float)
     paid = Column(Boolean, default=False)
+
     debt_list = relationship("DebtList", back_populates="debts")
+
+
+# Automatically update the last_updated column in a debt list when a debt is updated
+def debt_after_update_listener(mapper, connection, target):
+    connection.execute(
+        DebtList.__table__.update()
+        .where(DebtList.list_id == target.list_id)
+        .values(last_updated=datetime.utcnow())
+    )
+
+
+event.listen(Debt, "after_update", debt_after_update_listener)
