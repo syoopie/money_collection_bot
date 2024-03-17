@@ -225,8 +225,11 @@ async def handle_confirm_callback(update: Update, context: ContextTypes.DEFAULT_
     Returns:
         None
     """
+    callback_query = update.callback_query
+    await callback_query.answer()  # Answer the callback query to stop the loading animation on the button.
+
     # Pull out the debt list ID from the callback data
-    debt_list_id = update.callback_query.data.split(":")[1]
+    debt_list_id = callback_query.data.split(":")[1]
 
     if not get_debt_list_pending_status(debt_list_id):
         await context.bot.send_message(
@@ -255,9 +258,7 @@ async def handle_confirm_callback(update: Update, context: ContextTypes.DEFAULT_
         ]
         for group in groups
     ]
-
     reply_markup = InlineKeyboardMarkup(buttons)
-
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text="Choose which group to send this list to:",
@@ -266,6 +267,17 @@ async def handle_confirm_callback(update: Update, context: ContextTypes.DEFAULT_
 
     # Update the debt list status to confirmed in the database
     update_debt_list_status(debt_list_id, is_pending=False)
+
+    # Remove last line from original message
+    message: str = callback_query.message.text
+    message = message[: message.rfind("\n")]
+
+    # Remove confirm button from the message
+    await context.bot.edit_message_text(
+        chat_id=update.effective_chat.id,
+        message_id=callback_query.message.message_id,
+        text=message,
+    )
 
 
 async def handle_send_to_group_callback(
@@ -281,6 +293,8 @@ async def handle_send_to_group_callback(
     Returns:
         None
     """
+    await update.callback_query.answer()  # Answer the callback query to stop the loading animation on the button.
+
     _, group_id, debt_list_id = update.callback_query.data.split(":")
 
     message = get_debt_list_string(debt_list_id)
@@ -316,6 +330,8 @@ async def handle_pay_callback(update: Update, context: ContextTypes.DEFAULT_TYPE
     Returns:
         None
     """
+    await update.callback_query.answer()  # Answer the callback query to stop the loading animation on the button.
+
     _, list_id = update.callback_query.data.split(":")
     user_name = "@" + update.effective_user.username
 
@@ -357,6 +373,8 @@ async def handle_unpay_callback(update: Update, context: ContextTypes.DEFAULT_TY
     Returns:
         None
     """
+    await update.callback_query.answer()  # Answer the callback query to stop the loading animation on the button.
+
     _, list_id = update.callback_query.data.split(":")
     user_name = "@" + update.effective_user.username
 
