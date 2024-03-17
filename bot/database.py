@@ -184,6 +184,7 @@ def get_debt_list_info(list_id: int) -> dict:
                 }
                 for debt in debt_list.debts
             ],
+            "last_updated": debt_list.last_updated,
         }
     return []
 

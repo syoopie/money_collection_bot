@@ -2,6 +2,8 @@ from datetime import datetime
 from typing import List, Tuple, Union
 
 from bot.database import get_debt_list_info
+from datetime import datetime
+from pytz import timezone
 
 
 def parse_debt_list(
@@ -58,14 +60,21 @@ def get_debt_list_string(debt_list_id: int) -> str:
     debt_name = debt_list_info.get("debt_name")
     phone_number = debt_list_info.get("phone_number")
     debts = debt_list_info.get("debts")
+    last_updated: datetime = debt_list_info.get("last_updated")
+    # Convert the last_updated time to Singapore time
+    last_updated = (
+        timezone("UTC").localize(last_updated).astimezone(timezone("Asia/Singapore"))
+    ).strftime("%Y-%m-%d %H:%M:%S")
 
-    # TODO: Abstract this?
-    # Format the message and send it to the group
+    # Continue with the rest of the code
     message = f"{debt_name}\nPay to: {phone_number}\n\n"
     message += "\n".join(
-        [f"{debt.get('owed_by_user_name')} - {debt.get('amount')} {"✅" if debt.get("paid") else "❌"}" for debt in debts]
+        [
+            f"{debt.get('owed_by_user_name')} - {debt.get('amount')} {'✅' if debt.get('paid') else '❌'}"
+            for debt in debts
+        ]
     )
-    
-    message += f'\n\nMessage last updated at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}'
-    
+
+    message += f"\n\nMessage last updated at {last_updated}"
+
     return message

@@ -1,4 +1,5 @@
 from datetime import datetime
+from pytz import timezone
 from sqlalchemy import (
     create_engine,
     event,
@@ -64,7 +65,11 @@ class DebtList(Base):
     debt_name = Column(String)
     phone_number = Column(String)
     is_pending = Column(Boolean, default=True)
-    last_updated = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    last_updated = Column(
+        DateTime,
+        default=datetime.now(timezone("UTC")),
+        onupdate=datetime.now(timezone("UTC")),
+    )
     all_debts_paid = Column(Boolean, default=False)
 
     owner = relationship("User", back_populates="debt_lists")
