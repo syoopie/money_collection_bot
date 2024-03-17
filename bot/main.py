@@ -15,7 +15,7 @@ from bot.handlers.callback_handlers import (
     handle_pay_callback,
     handle_unpay_callback,
 )
-from bot.handlers.other_handlers import (
+from bot.handlers.message_handlers import (
     handle_parse_and_check_input,
     handle_save_user_group_info,
 )
