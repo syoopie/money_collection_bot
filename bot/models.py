@@ -62,6 +62,8 @@ class DebtList(Base):
     list_id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.user_id"))
     group_id = Column(Integer, ForeignKey("groups.group_id"), nullable=True)
+    chat_id = Column(Integer, nullable=True)
+    message_id = Column(Integer, nullable=True)
     debt_name = Column(String)
     phone_number = Column(String)
     is_pending = Column(Boolean, default=True)
