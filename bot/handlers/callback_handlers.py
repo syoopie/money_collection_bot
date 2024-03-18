@@ -271,7 +271,7 @@ async def handle_confirm_clear_callback(
     if debt_lists:
         for list_id in debt_lists:
             group_id, message_id = get_debt_list_message_info(list_id)
-            delete_message(context.bot, list_id, group_id, message_id)
+            await delete_message(context.bot, list_id, group_id, message_id)
             delete_debt_list(list_id)
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
