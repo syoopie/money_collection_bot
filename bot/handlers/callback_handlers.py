@@ -141,7 +141,7 @@ async def handle_pay_callback(update: Update, context: ContextTypes.DEFAULT_TYPE
     await update.callback_query.answer()  # Answer the callback query to stop the loading animation on the button.
 
     _, list_id = update.callback_query.data.split(":")
-    user_name = "@" + update.effective_user.username
+    user_name = update.effective_user.username
 
     success, result = get_debt_status(list_id, user_name)
 
@@ -211,7 +211,7 @@ async def handle_unpay_callback(update: Update, context: ContextTypes.DEFAULT_TY
     await update.callback_query.answer()  # Answer the callback query to stop the loading animation on the button.
 
     _, list_id = update.callback_query.data.split(":")
-    user_name = "@" + update.effective_user.username
+    user_name = update.effective_user.username
 
     success, result = get_debt_status(list_id, user_name)
     if not success:

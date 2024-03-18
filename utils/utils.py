@@ -53,7 +53,7 @@ def parse_debt_list(
         if line.startswith("@"):
             try:
                 username, amount_owed = line.split(" ", 1)
-                debts.append((username, float(amount_owed)))
+                debts.append((username[1:], float(amount_owed)))
             except ValueError:
                 return False, f"Failed to parse debt entry: '{line}'."
 
