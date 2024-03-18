@@ -32,7 +32,10 @@ def parse_debt_list(
 
     # Validate the number of lines
     if len(lines) < 3:
-        return False, "Input must have at least three lines."
+        return (
+            False,
+            "Input must have at least three lines. Make sure there is a name, phone number, and at least one debt. Example:\n\nMacDonalds\n98765432\n@user1 9.6\n@user2 5.4\n@user3 3.0",
+        )
 
     # Extract debt name and phone number
     debt_name = lines[0].strip()

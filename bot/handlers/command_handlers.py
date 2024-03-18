@@ -37,7 +37,7 @@ async def handle_command_start(update: Update, context: ContextTypes.DEFAULT_TYP
 
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text="Welcome to the Debt Tracker Bot! Start by sending a list of debts in this format:\n\n@user1 9.6\n@user2 5.4\n@user3 3.0",
+        text="Welcome to the Debt Tracker Bot! Start by sending a list of debts in this format:\n\nMacDonalds\n98765432\n@user1 9.6\n@user2 5.4\n@user3 3.0",
     )
 
 
