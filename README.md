@@ -6,14 +6,15 @@ If you are unfamiliar with Python Telegram bots, you can refer to the `LEARN_TEL
 
 ## Features
 
-- Add a list of user handles and the amount they have to pay.
-- Send the list to a specific group.
-- Users can check off their name once they've paid.
+- Keeps track of people still owes you money and reminds them for you
 
 ## Installation
 
 1. Clone this repository: `git clone https://github.com/syoopie/money_collection_bot.git`
 2. Install the dependencies: `pip install -r requirements.txt`
-3. Run the bot: `python bot.py`
+3. Run the bot: `python -m bot.main`
 
-## Usage
+## TODO
+
+- [ ] Add reminders for debts when they have not been updated for a certain period of time
+- [ ] Fix all todos in the code
