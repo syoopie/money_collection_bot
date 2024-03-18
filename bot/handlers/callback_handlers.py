@@ -185,7 +185,7 @@ async def handle_pay_callback(update: Update, context: ContextTypes.DEFAULT_TYPE
     if is_all_debt_paid(list_id):
         # Delete the debt list message
         group_id, message_id = get_debt_list_message_info(list_id)
-        delete_message(context.bot, list_id, group_id, message_id)
+        await delete_message(context.bot, list_id, group_id, message_id)
 
         debt_owner_id = get_debt_list_user_id(list_id)
         message = get_debt_list_string(list_id)
