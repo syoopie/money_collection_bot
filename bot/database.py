@@ -169,6 +169,12 @@ def update_debt_list_group(list_id: int, group_id: int) -> None:
         pass
 
 
+def get_all_debt_lists() -> list:
+    db: Session = next(get_db())
+    debt_lists = db.query(DebtList).all()
+    return debt_lists
+
+
 def get_debt_list_info(list_id: int) -> dict:
     db: Session = next(get_db())
     debt_list = db.query(DebtList).filter(DebtList.list_id == list_id).first()
@@ -223,11 +229,10 @@ def update_debt_list_status(list_id: int, is_pending: bool) -> None:
         pass
 
 
-def update_debt_list_message_info(list_id: int, chat_id: int, message_id: int) -> None:
+def update_debt_list_message_info(list_id: int, message_id: int) -> None:
     db: Session = next(get_db())
     debt_list = db.query(DebtList).filter(DebtList.list_id == list_id).first()
     if debt_list:
-        debt_list.chat_id = chat_id
         debt_list.message_id = message_id
         db.commit()
     else:
@@ -243,11 +248,11 @@ def get_debt_list_name(list_id: int) -> str:
     return ""  # TODO: Should return some error instead
 
 
-def get_debt_list_message_info(list_id: int) -> int:
+def get_debt_list_message_info(list_id: int) -> tuple[int, int]:
     db: Session = next(get_db())
     debt_list = db.query(DebtList).filter(DebtList.list_id == list_id).first()
     if debt_list:
-        return debt_list.chat_id, debt_list.message_id
+        return debt_list.group_id, debt_list.message_id
     return 0, 0  # TODO: Should return some error instead
 
 
@@ -255,7 +260,6 @@ def delete_debt_list_message_info(list_id: int) -> None:
     db: Session = next(get_db())
     debt_list = db.query(DebtList).filter(DebtList.list_id == list_id).first()
     if debt_list:
-        debt_list.chat_id = None
         debt_list.message_id = None
         db.commit()
     else:
