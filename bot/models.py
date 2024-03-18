@@ -72,7 +72,6 @@ class DebtList(Base):
         default=datetime.now(timezone("UTC")),
         onupdate=datetime.now(timezone("UTC")),
     )
-    all_debts_paid = Column(Boolean, default=False)
 
     owner = relationship("User", back_populates="debt_lists")
     group = relationship("Group", back_populates="debt_lists", uselist=False)
