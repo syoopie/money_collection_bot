@@ -16,5 +16,4 @@ If you are unfamiliar with Python Telegram bots, you can refer to the `LEARN_TEL
 
 ## TODO
 
-- [ ] Add reminders for debts when they have not been updated for a certain period of time
 - [ ] Fix all todos in the code
