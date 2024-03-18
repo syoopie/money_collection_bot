@@ -82,15 +82,7 @@ def get_debt_list_string(debt_list_id: int) -> str:
     return message
 
 
-async def delete_message(bot: Bot, chat_id: int, message_id: int):
-    """
-    Deletes a message from a chat.
-
-    Args:
-        chat_id (int): The ID of the chat where the message is located.
-        message_id (int): The ID of the message to delete.
-
-    Returns:
-        None
-    """
-    await bot.delete_message(chat_id=chat_id, message_id=message_id)
+def is_all_debt_paid(debt_list_id: int) -> bool:
+    debt_list_info = get_debt_list_info(debt_list_id)
+    debts = debt_list_info.get("debts")
+    return all(debt.get("paid") for debt in debts)
