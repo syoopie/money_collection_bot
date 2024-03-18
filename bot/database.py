@@ -320,7 +320,7 @@ def associate_debt_with_debt_list(debt_id: int, list_id: int) -> None:
         db.commit()
 
 
-def update_debt_status(list_id: int, user_name: str, paid: bool) -> None:
+def update_debt_status(list_id: int, user_name: str, paid: bool):
     db: Session = next(get_db())
     debt = (
         db.query(Debt)
@@ -330,6 +330,9 @@ def update_debt_status(list_id: int, user_name: str, paid: bool) -> None:
     if debt:
         debt.paid = paid
         db.commit()
+        return True, "No Error"
+    else:
+        return False, "You are not in that debt list"
 
 
 def get_debt_status(list_id: int, user_name: str) -> bool:
@@ -340,8 +343,8 @@ def get_debt_status(list_id: int, user_name: str) -> bool:
         .first()
     )
     if debt:
-        return debt.paid
-    return False  # TODO: Should return some error instead
+        return True, debt.paid
+    return False, "You are not in that debt list"
 
 
 def initialize_database():

@@ -143,7 +143,16 @@ async def handle_pay_callback(update: Update, context: ContextTypes.DEFAULT_TYPE
     _, list_id = update.callback_query.data.split(":")
     user_name = "@" + update.effective_user.username
 
-    if get_debt_status(list_id, user_name):
+    success, result = get_debt_status(list_id, user_name)
+
+    if not success:
+        await context.bot.send_message(
+            chat_id=update.effective_user.id,
+            text=f"An error occurred: {result}",
+        )
+        return
+
+    if success and result:
         await context.bot.send_message(
             chat_id=update.effective_user.id,
             text=f"You have already marked this debt ({get_debt_list_name(list_id)}) as paid.",
@@ -153,7 +162,14 @@ async def handle_pay_callback(update: Update, context: ContextTypes.DEFAULT_TYPE
     group_id = update.effective_chat.id
     user_id = update.effective_user.id
 
-    update_debt_status(list_id, user_name, True)
+    success, result = update_debt_status(list_id, user_name, True)
+    if not success:
+        await context.bot.send_message(
+            chat_id=update.effective_user.id,
+            text=f"An error occurred: {result}",
+        )
+        return
+
     # Send message to user to confirm payment
     await context.bot.send_message(
         chat_id=user_id,
@@ -197,7 +213,15 @@ async def handle_unpay_callback(update: Update, context: ContextTypes.DEFAULT_TY
     _, list_id = update.callback_query.data.split(":")
     user_name = "@" + update.effective_user.username
 
-    if not get_debt_status(list_id, user_name):
+    success, result = get_debt_status(list_id, user_name)
+    if not success:
+        await context.bot.send_message(
+            chat_id=update.effective_user.id,
+            text=f"An error occurred: {result}",
+        )
+        return
+
+    if success and not result:
         await context.bot.send_message(
             chat_id=update.effective_user.id,
             text=f"You have already marked this debt ({get_debt_list_name(list_id)}) as unpaid.",
@@ -207,7 +231,13 @@ async def handle_unpay_callback(update: Update, context: ContextTypes.DEFAULT_TY
     group_id = update.effective_chat.id
     user_id = update.effective_user.id
 
-    update_debt_status(list_id, user_name, False)
+    sucess, result = update_debt_status(list_id, user_name, False)
+    if not success:
+        await context.bot.send_message(
+            chat_id=update.effective_user.id,
+            text=f"An error occurred: {result}",
+        )
+        return
 
     message = get_debt_list_string(list_id)
     await context.bot.edit_message_text(
