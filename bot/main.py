@@ -1,5 +1,15 @@
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from config.config import BOT_TOKEN
 from bot.database import initialize_database
+from utils.utils import check_and_resend_debt_lists
+
+from telegram.ext import (
+    ApplicationBuilder,
+    CommandHandler,
+    CallbackQueryHandler,
+    MessageHandler,
+    filters,
+)
 
 from bot.handlers.command_handlers import (
     handle_command_example,
@@ -8,6 +18,7 @@ from bot.handlers.command_handlers import (
     handle_command_show,
     handle_command_clear,
     handle_command_help,
+    handle_resend_all_command,
     handle_unknown_command,
 )
 from bot.handlers.callback_handlers import (
@@ -21,13 +32,6 @@ from bot.handlers.message_handlers import (
     handle_parse_and_check_input,
     handle_save_user_group_info,
 )
-from telegram.ext import (
-    ApplicationBuilder,
-    CommandHandler,
-    CallbackQueryHandler,
-    MessageHandler,
-    filters,
-)
 
 
 if __name__ == "__main__":
@@ -36,6 +40,13 @@ if __name__ == "__main__":
 
     # Create the Application and pass it your bot's token.
     app = ApplicationBuilder().token(BOT_TOKEN).build()
+
+    # Setup APScheduler to check every 2 hours whether or not to resend debt lists
+    scheduler = AsyncIOScheduler()
+    scheduler.add_job(
+        check_and_resend_debt_lists, "interval", hours=2, args=[app]
+    )  # Abstract the interval into a config file
+    scheduler.start()
 
     # Register command handlers
     app.add_handler(
@@ -55,6 +66,9 @@ if __name__ == "__main__":
     )
     app.add_handler(
         CommandHandler("help", handle_command_help, filters.ChatType.PRIVATE)
+    )
+    app.add_handler(
+        CommandHandler("resendall", handle_resend_all_command, filters.ChatType.PRIVATE)
     )
 
     # Register message handlers

@@ -1,12 +1,11 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes
-from utils.utils import get_debt_list_string
+from utils.utils import check_and_resend_debt_lists, get_debt_list_string
 
 from bot.database import (
     add_or_update_user,
     get_user_groups,
     get_debt_lists_by_user_id,
-    delete_debt_list,
 )
 
 
@@ -144,6 +143,24 @@ async def handle_command_help(update: Update, context: ContextTypes.DEFAULT_TYPE
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message,
+    )
+
+
+async def handle_resend_all_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """
+    Handle the command "/resendall" to resend all debt lists to the groups they were sent to.
+
+    Args:
+        update (Update): The update object containing information about the incoming message.
+        context (ContextTypes.DEFAULT_TYPE): The context object containing bot-related information.
+
+    Returns:
+        None
+    """
+    await check_and_resend_debt_lists(context)
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text="All debt lists have been resent.",
     )
 
 

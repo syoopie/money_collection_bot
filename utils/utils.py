@@ -1,11 +1,19 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List, Tuple, Union
 
-from telegram import Bot
+from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import ContextTypes
 
-from bot.database import delete_debt_list_message_info, get_debt_list_info
+from bot.database import (
+    delete_debt_list_message_info,
+    get_all_debt_lists,
+    get_debt_list_info,
+    update_debt_list_message_info,
+)
 from datetime import datetime
 from pytz import timezone
+
+from bot.models import DebtList
 
 
 def parse_debt_list(
@@ -75,7 +83,7 @@ def get_debt_list_string(debt_list_id: int) -> str:
     message = f"{debt_name}\nPay to: {phone_number}\n\n"
     message += "\n".join(
         [
-            f"{debt.get('owed_by_user_name')} - {debt.get('amount')} {'✅' if debt.get('paid') else '❌'}"
+            f"{'' if debt.get('paid') else '@'}{debt.get('owed_by_user_name')} - {debt.get('amount')} {'✅' if debt.get('paid') else '❌'}"
             for debt in debts
         ]
     )
@@ -91,7 +99,9 @@ def is_all_debt_paid(debt_list_id: int) -> bool:
     return all(debt.get("paid") for debt in debts)
 
 
-async def delete_message(bot: Bot, debt_list_id: int, chat_id: int, message_id: int):
+async def delete_message(
+    bot: Bot, debt_list_id: int, group_id: int, message_id: int
+) -> None:
     """
     Deletes a message from a chat and removes the associated debt list message info.
 
@@ -103,6 +113,38 @@ async def delete_message(bot: Bot, debt_list_id: int, chat_id: int, message_id: 
     """
     try:
         # This is in a try-finally block to ensure that the debt list message info is deleted even if an exception occurs (usually because the message does not exist)
-        await bot.delete_message(chat_id=chat_id, message_id=message_id)
+        await bot.delete_message(chat_id=group_id, message_id=message_id)
     finally:
         delete_debt_list_message_info(debt_list_id)
+
+
+async def check_and_resend_debt_lists(context: ContextTypes.DEFAULT_TYPE):
+    now = datetime.now(timezone("UTC"))
+    threshold = now - timedelta(hours=16)  # Abstract this into config file
+    debt_lists: List[DebtList] = get_all_debt_lists()
+
+    for debt_list in debt_lists:
+        if timezone("UTC").localize(debt_list.last_updated) < threshold:
+            await delete_message(
+                context.bot, debt_list.list_id, debt_list.group_id, debt_list.message_id
+            )
+
+            # TODO: Abstract this out along with the one in callback_handlers.py
+            message = get_debt_list_string(debt_list.list_id)
+            pay_button = InlineKeyboardButton(
+                "✅", callback_data=f"pay:{debt_list.list_id}"
+            )
+            unpay_button = InlineKeyboardButton(
+                "❌", callback_data=f"unpay:{debt_list.list_id}"
+            )
+            buttons = [[pay_button, unpay_button]]
+            reply_markup = InlineKeyboardMarkup(buttons)
+
+            new_message = await context.bot.send_message(
+                chat_id=debt_list.group_id,
+                text=message,
+                reply_markup=reply_markup,
+            )
+
+            new_message_id = new_message.message_id
+            update_debt_list_message_info(debt_list.list_id, new_message_id)

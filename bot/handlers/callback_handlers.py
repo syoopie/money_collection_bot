@@ -115,9 +115,7 @@ async def handle_send_to_group_callback(
     )
 
     update_debt_list_group(debt_list_id, group_id)
-    update_debt_list_message_info(
-        debt_list_id, debt_list_message.chat.id, debt_list_message.message_id
-    )
+    update_debt_list_message_info(debt_list_id, debt_list_message.message_id)
 
     # Modify the message to indicate that the debt list has been sent to the group
     await context.bot.edit_message_text(
@@ -186,8 +184,8 @@ async def handle_pay_callback(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     if is_all_debt_paid(list_id):
         # Delete the debt list message
-        chat_id, message_id = get_debt_list_message_info(list_id)
-        delete_message(context.bot, list_id, chat_id, message_id)
+        group_id, message_id = get_debt_list_message_info(list_id)
+        delete_message(context.bot, list_id, group_id, message_id)
 
         debt_owner_id = get_debt_list_user_id(list_id)
         message = get_debt_list_string(list_id)
@@ -272,8 +270,8 @@ async def handle_confirm_clear_callback(
     debt_lists = get_debt_lists_by_user_id(update.effective_user.id)
     if debt_lists:
         for list_id in debt_lists:
-            chat_id, message_id = get_debt_list_message_info(list_id)
-            delete_message(context.bot, list_id, chat_id, message_id)
+            group_id, message_id = get_debt_list_message_info(list_id)
+            delete_message(context.bot, list_id, group_id, message_id)
             delete_debt_list(list_id)
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
