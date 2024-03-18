@@ -1,6 +1,6 @@
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import ContextTypes
-from utils.utils import get_debt_list_string, is_all_debt_paid
+from utils.utils import delete_message, get_debt_list_string, is_all_debt_paid
 
 from bot.database import (
     delete_debt_list,
@@ -160,25 +160,24 @@ async def handle_pay_callback(update: Update, context: ContextTypes.DEFAULT_TYPE
         text=f"You have marked the debt ({get_debt_list_name(list_id)}) as paid.",
     )
 
+    message = get_debt_list_string(list_id)
+    await context.bot.edit_message_text(
+        chat_id=group_id,
+        message_id=update.callback_query.message.message_id,
+        text=message,
+        reply_markup=update.callback_query.message.reply_markup,  # Keep the same inline keyboard
+    )
+
     if is_all_debt_paid(list_id):
         # Delete the debt list message
         chat_id, message_id = get_debt_list_message_info(list_id)
-        await context.bot.delete_message(chat_id=chat_id, message_id=message_id)
+        delete_message(context.bot, list_id, chat_id, message_id)
 
         debt_owner_id = get_debt_list_user_id(list_id)
         message = get_debt_list_string(list_id)
         await context.bot.send_message(
             chat_id=debt_owner_id,
             text=f"This debt has been settled:\n\n{message}",
-        )
-
-    else:
-        message = get_debt_list_string(list_id)
-        await context.bot.edit_message_text(
-            chat_id=group_id,
-            message_id=update.callback_query.message.message_id,
-            text=message,
-            reply_markup=update.callback_query.message.reply_markup,  # Keep the same inline keyboard
         )
 
 
@@ -244,7 +243,7 @@ async def handle_confirm_clear_callback(
     if debt_lists:
         for list_id in debt_lists:
             chat_id, message_id = get_debt_list_message_info(list_id)
-            await context.bot.delete_message(chat_id=chat_id, message_id=message_id)
+            delete_message(context.bot, list_id, chat_id, message_id)
             delete_debt_list(list_id)
         await context.bot.send_message(
             chat_id=update.effective_chat.id,

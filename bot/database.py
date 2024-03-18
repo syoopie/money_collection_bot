@@ -251,6 +251,17 @@ def get_debt_list_message_info(list_id: int) -> int:
     return 0, 0  # TODO: Should return some error instead
 
 
+def delete_debt_list_message_info(list_id: int) -> None:
+    db: Session = next(get_db())
+    debt_list = db.query(DebtList).filter(DebtList.list_id == list_id).first()
+    if debt_list:
+        debt_list.chat_id = None
+        debt_list.message_id = None
+        db.commit()
+    else:
+        pass  # TODO: Do something with error
+
+
 def get_debt_list_user_id(list_id: int) -> int:
     db: Session = next(get_db())
     debt_list = db.query(DebtList).filter(DebtList.list_id == list_id).first()

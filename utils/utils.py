@@ -3,7 +3,7 @@ from typing import List, Tuple, Union
 
 from telegram import Bot
 
-from bot.database import get_debt_list_info
+from bot.database import delete_debt_list_message_info, get_debt_list_info
 from datetime import datetime
 from pytz import timezone
 
@@ -89,3 +89,20 @@ def is_all_debt_paid(debt_list_id: int) -> bool:
     debt_list_info = get_debt_list_info(debt_list_id)
     debts = debt_list_info.get("debts")
     return all(debt.get("paid") for debt in debts)
+
+
+async def delete_message(bot: Bot, debt_list_id: int, chat_id: int, message_id: int):
+    """
+    Deletes a message from a chat and removes the associated debt list message info.
+
+    Args:
+        bot (Bot): The bot instance used to delete the message.
+        debt_list_id (int): The ID of the debt list associated with the message.
+        chat_id (int): The ID of the chat where the message is located.
+        message_id (int): The ID of the message to be deleted.
+    """
+    try:
+        # This is in a try-finally block to ensure that the debt list message info is deleted even if an exception occurs (usually because the message does not exist)
+        await bot.delete_message(chat_id=chat_id, message_id=message_id)
+    finally:
+        delete_debt_list_message_info(debt_list_id)
