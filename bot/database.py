@@ -127,6 +127,16 @@ def get_group_name(group_id: int) -> str:
     return ""  # TODO: Should return some error instead
 
 
+def user_has_pending_debt_list(user_id: int) -> bool:
+    db: Session = next(get_db())
+    debt_lists = (
+        db.query(DebtList)
+        .filter(DebtList.user_id == user_id, DebtList.is_pending == True)
+        .all()
+    )
+    return debt_lists[0].list_id if debt_lists else 0
+
+
 def add_debt_list(
     user_id: int,
     debt_name: str,

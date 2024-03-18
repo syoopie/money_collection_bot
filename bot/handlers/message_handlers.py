@@ -5,11 +5,13 @@ from utils.utils import parse_debt_list
 from bot.database import (
     add_or_update_user,
     add_or_update_group,
+    delete_debt_list,
     is_user_in_group,
     associate_user_with_group,
     add_debt_list,
     add_or_update_debt,
     associate_debt_with_debt_list,
+    user_has_pending_debt_list,
 )
 
 
@@ -33,8 +35,12 @@ async def handle_parse_and_check_input(
         await context.bot.send_message(chat_id=user_id, text=result)
         return
 
-    # Add the debt list to the database
+    list_id = user_has_pending_debt_list(user_id)
+    if list_id:
+        delete_debt_list(list_id)
+
     debt_name, phone_number, debts = result
+
     # Create new debt list
     debt_list_id = add_debt_list(
         user_id=user_id, debt_name=debt_name, phone_number=phone_number
