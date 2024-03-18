@@ -322,29 +322,32 @@ def associate_debt_with_debt_list(debt_id: int, list_id: int) -> None:
 
 def update_debt_status(list_id: int, user_name: str, paid: bool):
     db: Session = next(get_db())
-    debt = (
-        db.query(Debt)
-        .filter(Debt.list_id == list_id, Debt.owed_by_user_name == user_name)
-        .first()
-    )
-    if debt:
-        debt.paid = paid
-        db.commit()
-        return True, "No Error"
-    else:
+
+    debt = db.query(Debt).filter(Debt.list_id == list_id)
+    if not debt.first():
+        return False, "That debt list does not exist"
+
+    debt = debt.filter(Debt.owed_by_user_name == user_name).first()
+    if not debt:
         return False, "You are not in that debt list"
+
+    debt.paid = paid
+    db.commit()
+    return True, "No Error"
 
 
 def get_debt_status(list_id: int, user_name: str) -> bool:
     db: Session = next(get_db())
-    debt = (
-        db.query(Debt)
-        .filter(Debt.list_id == list_id, Debt.owed_by_user_name == user_name)
-        .first()
-    )
-    if debt:
-        return True, debt.paid
-    return False, "You are not in that debt list"
+
+    debt = db.query(Debt).filter(Debt.list_id == list_id)
+    if not debt.first():
+        return False, "That debt list does not exist"
+
+    debt = debt.filter(Debt.owed_by_user_name == user_name).first()
+    if not debt:
+        return False, "You are not in that debt list"
+
+    return True, debt.paid
 
 
 def initialize_database():
