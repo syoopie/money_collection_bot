@@ -1,5 +1,3 @@
-from datetime import datetime
-from pytz import timezone
 from sqlalchemy import (
     create_engine,
     event,
@@ -11,6 +9,7 @@ from sqlalchemy import (
     ForeignKey,
     Table,
     DateTime,
+    func,
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
@@ -62,15 +61,14 @@ class DebtList(Base):
     list_id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.user_id"))
     group_id = Column(Integer, ForeignKey("groups.group_id"), nullable=True)
-    chat_id = Column(Integer, nullable=True)
     message_id = Column(Integer, nullable=True)
     debt_name = Column(String)
     phone_number = Column(String)
     is_pending = Column(Boolean, default=True)
     last_updated = Column(
         DateTime,
-        default=datetime.now(timezone("UTC")),
-        onupdate=datetime.now(timezone("UTC")),
+        default=func.now(),
+        onupdate=func.now(),
     )
 
     owner = relationship("User", back_populates="debt_lists")
@@ -97,7 +95,7 @@ def debt_after_update_listener(mapper, connection, target):
     connection.execute(
         DebtList.__table__.update()
         .where(DebtList.list_id == target.list_id)
-        .values(last_updated=datetime.utcnow())
+        .values(last_updated=func.now())
     )
 
 
