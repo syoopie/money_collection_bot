@@ -136,6 +136,7 @@ async def handle_command_help(update: Update, context: ContextTypes.DEFAULT_TYPE
         None
     """
     message = "Here are the available commands:\n\n"
+    message += "/example - Get an example on how to use the bot\n"
     message += "/getgroups - Get a list of groups you are in\n"
     message += "/show - Show all your debt lists\n"
     message += "/clear - Clear all your debt lists\n"
