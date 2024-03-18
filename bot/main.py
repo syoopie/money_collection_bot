@@ -2,6 +2,7 @@ from config.config import BOT_TOKEN
 from bot.database import initialize_database
 
 from bot.handlers.command_handlers import (
+    handle_command_example,
     handle_command_start,
     handle_command_get_groups,
     handle_command_show,
@@ -39,6 +40,9 @@ if __name__ == "__main__":
     # Register command handlers
     app.add_handler(
         CommandHandler("start", handle_command_start, filters.ChatType.PRIVATE)
+    )
+    app.add_handler(
+        CommandHandler("example", handle_command_example, filters.ChatType.PRIVATE)
     )
     app.add_handler(
         CommandHandler("getgroups", handle_command_get_groups, filters.ChatType.PRIVATE)

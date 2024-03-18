@@ -41,6 +41,13 @@ async def handle_command_start(update: Update, context: ContextTypes.DEFAULT_TYP
     )
 
 
+async def handle_command_example(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text="Send a meesage in the follow format:\n\nDEBT_NAME\nPHONE_NUMBER\n@user_handle AMOUNT_OWED\n@user_handle AMOUNT_OWED\n@user_handle AMOUNT_OWED\n\nExample:\n\nMacDonalds\n98765432\n@user1 9.6\n@user2 5.4\n@user3 3.0",
+    )
+
+
 async def handle_command_get_groups(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Handles the '/getgroups' command. This command is used to get a list of groups the user is in.
